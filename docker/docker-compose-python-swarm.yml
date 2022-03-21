@@ -1,0 +1,29 @@
+version: '3.7'
+
+networks:
+  default:
+    external: true
+    name: lb-common
+  lambda:
+
+services:
+  lambda-local:
+    image: mraynov/lambda-python-local
+    deploy:
+      replicas: 1
+      labels:
+        traefik.frontend.rule: "Host:lambda.local.io"
+        traefik.enable: "true"
+        traefik.backend: "lambda_back"
+        traefik.port: "8080"
+    # environment:
+      # - ENTRYPOINT="/var/task"
+      # - WORKDIR="/var/task"
+      # - ENV="sandbox"
+      # - CMD="app.handler"
+    # volumes:
+    #   - ../data/python:/var/task
+    networks:
+      - lambda
+      - default
+    
