@@ -3,26 +3,19 @@ def lambda_handler(event, context):
     This function handles adding a custom claim to the cognito ID token.
     """
     
-    # grab requestor's email address
-    email = event['request']['userAttributes']['email']
+    groups = event['request']['groupConfiguration']['groupsToOverride']
     
-    # placeholder variable
-    pet_preference = ''
+    groupsOverride = []
+    for group in groups :
+        groupsOverride.append(group.replace("_","/",1).lower())
     
-    # set preference to 'dogs' if email contains @amazon.com
-    # otherwise preference is 'cats'
-    if "@amazon.com" in email:
-        pet_preference = 'dogs'
-    else:
-        pet_preference = 'cats'
-    
-    # this allows us to override claims in the id token
-    # "claimsToAddOrOverride" is the important part 
+    print('|'.join(groupsOverride))
+
     event["response"]["claimsOverrideDetails"] = { 
-        "claimsToAddOrOverride": { 
-            "hove-test2": pet_preference 
-            }
-        } 
-         
+        "groupOverrideDetails": {
+            "groupsToOverride": groupsOverride
+        }
+    }
+ 
     # return modified ID token to Amazon Cognito 
-    return event 
+    return event
